@@ -14,14 +14,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calculadora.ui.theme.CalculadoraTheme
+import kotlin.math.sqrt
 
 // Variaveis globais
 var calcArray: Array<String> = emptyArray()
@@ -73,7 +70,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                           .fillMaxWidth()
                           .padding(vertical = 13.dp),
                   textAlign = TextAlign.End,
-                  fontSize = 13.sp)
+                  fontSize = 20.sp)
 
             Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
                 createButton("MRC", Color.Black) {}
@@ -83,9 +80,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
             }
 
             Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("√", Color.Black) {}
+                createButton("√", Color.Black) { displayValue.value = addSquareRoot() }
                 createButton("%", Color.Black) { displayValue.value = addSymbol("%", displayValue.value) }
-                createButton("+/-", Color.Black) {}
+                createButton("+/-", Color.Black) { displayValue.value = toggleSign() }
                 createButton("CE", Color.Red) { displayValue.value = clearInfos() }
             }
 
@@ -136,14 +133,8 @@ fun clearInfos(): String {
 }
 
 fun addNumber(number: String): String {
-    // Se não tiver nenhum item no array adicionar o nº como 1º
-    if (calcArray.isEmpty()) {
-        calcArray += number
-        return number
-    }
-
-    // Se a ultima operação tiver dado erro reiniciar o processo
-    if (calcArray.first() == "ERR") {
+    // Se não tiver nenhum item no array ou tiver dado erro adicionar o nº como 1º
+    if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf(number)
         return number
     }
@@ -164,8 +155,8 @@ fun addNumber(number: String): String {
 }
 
 fun addSymbol(symbol: String, lastValue: String): String {
-    // Se o array tiver vazio adicionar um 0 e operador
-    if (calcArray.isEmpty()) {
+    // Se o array tiver vazio ou tiver dado um erro adicionar um 0 e operador
+    if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf("0", symbol)
         return "0"
     }
@@ -175,12 +166,6 @@ fun addSymbol(symbol: String, lastValue: String): String {
         var result = calcResult()
         calcArray = arrayOf(result, symbol)
         return result
-    }
-
-    // Se a ultima operação tiver dado erro reiniciar o processo
-    if (calcArray.first() == "ERR") {
-        calcArray = arrayOf("0", symbol)
-        return "0"
     }
 
     // Obter o ultimo valor do arrayy
@@ -198,14 +183,8 @@ fun addSymbol(symbol: String, lastValue: String): String {
 }
 
 fun addDot(): String {
-    // Se não tiver nenhum item no array adicionar 0.
-    if (calcArray.isEmpty()) {
-        calcArray += "0."
-        return "0."
-    }
-
-    // Se a ultima operação tiver dado erro reiniciar o processo
-    if (calcArray.first() == "ERR") {
+    // Se não tiver nenhum item no array ou tiver dado erro adicionar 0.
+    if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf("0.")
         return "0."
     }
@@ -228,6 +207,50 @@ fun addDot(): String {
     return lastString
 }
 
+fun addSquareRoot(): String {
+    // Se não tiver nenhum item no array ou tiver dado erro adicionar o simbolo de raiz
+    if (calcArray.isEmpty() || calcArray.first() == "ERR") {
+        calcArray = arrayOf("√")
+        return "√"
+    }
+
+    // Obter o ultimo valor do array
+    var lastString = calcArray.last()
+
+    // Se o valor já for um simbolo alterar o memso
+    if (operationSymbols.contains(lastString)) {
+        calcArray += "√"
+        return "√"
+    }
+
+    // Se não for no inicio do calculo não se pode adicionar a raiz
+    return lastString
+}
+
+fun toggleSign(): String {
+    var numValue: String
+
+    // Se não tiver nenhum item no array ou tiver dado erro adicionar o simbolo de negativo
+    if (calcArray.isEmpty() || calcArray.first() == "ERR") {
+        calcArray = arrayOf("-0")
+        return "-0"
+    }
+
+    // Alterar o sinal do ultimo elemento
+    if (calcArray.size == 3) {
+        numValue = calcArray.last()
+        numValue = if (numValue.contains("-")) numValue.replace("-", "") else "-$numValue"
+        calcArray[calcArray.size - 1] = numValue
+        return numValue
+    }
+
+    // Se não alterar o sinal do 1º elemento
+    numValue = calcArray.first()
+    numValue = if (numValue.contains("-")) numValue.replace("-", "") else "-$numValue"
+    calcArray[0] = numValue
+    return numValue
+}
+
 fun calcResult(): String {
     var firstNumber: Double
     var operationValue: String
@@ -237,12 +260,13 @@ fun calcResult(): String {
 
     // Se o tamanho for 1 devolver o valor do array
     if (calcArray.size == 1) {
-        return calcArray.first()
+        firstNumber = resolveSquareRoot(calcArray.first())
+        return removeZeros(firstNumber)
     }
 
     // Se tiver dois elementos fazer a operação com o 1º e o operador
     if (calcArray.size == 2) {
-        firstNumber = calcArray.first().toDouble()
+        firstNumber = resolveSquareRoot(calcArray.first())
         operationValue = operatorResolve(firstNumber, calcArray[1], firstNumber)
         // Colocar o resultado no array
         calcArray = arrayOf(operationValue)
@@ -250,8 +274,8 @@ fun calcResult(): String {
     }
 
     // Fazer o calculo de quanto tem as 3 possições
-    firstNumber = calcArray.first().toDouble()
-    var secondNumber = calcArray.last().toDouble()
+    firstNumber = resolveSquareRoot(calcArray.first())
+    var secondNumber = resolveSquareRoot(calcArray.last())
     operationValue = operatorResolve(firstNumber, calcArray[1], secondNumber)
     // Colocar o resultado no array
     calcArray = arrayOf(operationValue)
@@ -271,8 +295,20 @@ fun operatorResolve(firstNumber: Double, operator: String, secondNumber: Double 
         else -> 0
     }
 
+    return removeZeros(result)
+}
+
+fun resolveSquareRoot(number: String): Double {
+    if (!number.startsWith("√")) return number.toDouble()
+
+    // Remover o simbolo da raiz e devolver o calculo
+    var numberDouble = number.replace("√", "").toDouble()
+    return sqrt(numberDouble)
+}
+
+fun removeZeros(number: Number): String {
+    var resultString = number.toString()
     // Se acabar por .0 devolver sem o .0
-    var resultString = result.toString()
     if (resultString.endsWith(".0")) return resultString.split(".").first()
 
     return resultString
