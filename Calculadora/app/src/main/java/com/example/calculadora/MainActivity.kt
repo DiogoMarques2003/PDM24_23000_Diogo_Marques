@@ -31,10 +31,46 @@ import androidx.compose.ui.unit.sp
 import com.example.calculadora.ui.theme.CalculadoraTheme
 import kotlin.math.sqrt
 
+//Tipos
+data class Button(
+    val name : String,
+    val color: Color,
+    val funcName : String = "",
+    val parameter: String = ""
+)
+
 // Variaveis globais
 var calcArray: Array<String> = emptyArray()
+var memoryValue = "0"
+var resetMemory = false
 
 // Constantes
+val ButtonLayout: Array<Array<Button>> = arrayOf(
+    arrayOf(Button("MRC", Color.Black, "getMemory"),
+        Button("M-", Color.Black, "calcToMemory", "-"),
+        Button("M-", Color.Black, "calcToMemory", "+"),
+        Button("ON/C", Color.Red)),
+    arrayOf(Button("√", Color.Black, "addSquareRoot"),
+        Button("%", Color.Black, "addSymbol", "%"),
+        Button("+/-", Color.Black, "toggleSign"),
+        Button("CE", Color.Red, "clearInfos")),
+    arrayOf(Button("7", Color.Gray, "addNumber"),
+        Button("8", Color.Gray, "addNumber"),
+        Button("9", Color.Gray, "addNumber"),
+        Button("÷", Color.Black, "addSymbol", "/")),
+    arrayOf(Button("4", Color.Gray, "addNumber"),
+        Button("5", Color.Gray, "addNumber"),
+        Button("6", Color.Gray, "addNumber"),
+        Button("X", Color.Black, "addSymbol", "*")),
+    arrayOf(Button("1", Color.Gray, "addNumber"),
+        Button("2", Color.Gray, "addNumber"),
+        Button("3", Color.Gray, "addNumber"),
+        Button("-", Color.Black, "addSymbol", "-")),
+    arrayOf(Button("0", Color.Gray, "addNumber"),
+        Button(".", Color.Gray, "addDot"),
+        Button("=", Color.Gray, "calcResult"),
+        Button("+", Color.Black, "addSymbol", "+"))
+)
 val operationSymbols = arrayOf("+", "-", "*", "/", "%")
 
 class MainActivity : ComponentActivity() {
@@ -72,46 +108,25 @@ fun MainScreen(modifier: Modifier = Modifier) {
                   textAlign = TextAlign.End,
                   fontSize = 20.sp)
 
-            Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("MRC", Color.Black) {}
-                createButton("M-", Color.Black) {}
-                createButton("M+", Color.Black) {}
-                createButton("ON/C", Color.Red) {}
-            }
-
-            Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("√", Color.Black) { displayValue.value = addSquareRoot() }
-                createButton("%", Color.Black) { displayValue.value = addSymbol("%", displayValue.value) }
-                createButton("+/-", Color.Black) { displayValue.value = toggleSign() }
-                createButton("CE", Color.Red) { displayValue.value = clearInfos() }
-            }
-
-            Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("7", Color.Gray) { displayValue.value = addNumber("7") }
-                createButton("8", Color.Gray) { displayValue.value = addNumber("8") }
-                createButton("9", Color.Gray) { displayValue.value = addNumber("9") }
-                createButton("÷", Color.Black) { displayValue.value = addSymbol("/", displayValue.value) }
-            }
-
-            Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("4", Color.Gray) { displayValue.value = addNumber("4") }
-                createButton("5", Color.Gray) { displayValue.value = addNumber("5") }
-                createButton("6", Color.Gray) { displayValue.value = addNumber("6") }
-                createButton("X", Color.Black) { displayValue.value = addSymbol("*", displayValue.value) }
-            }
-
-            Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("1", Color.Gray) { displayValue.value = addNumber("1") }
-                createButton("2", Color.Gray) { displayValue.value = addNumber("2") }
-                createButton("3", Color.Gray) { displayValue.value = addNumber("3") }
-                createButton("-", Color.Black) { displayValue.value = addSymbol("-", displayValue.value) }
-            }
-
-            Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                createButton("0", Color.Gray) { displayValue.value = addNumber("0") }
-                createButton(".", Color.Gray) { displayValue.value = addDot() }
-                createButton("=", Color.Gray) { displayValue.value = calcResult() }
-                createButton("+", Color.Black) { displayValue.value = addSymbol("+", displayValue.value) }
+            for (buttons in ButtonLayout) {
+                Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    for (button in buttons) {
+                        createButton(button.name, button.color) {
+                            displayValue.value = when (button.funcName) {
+                                "getMemory" -> getMemory(displayValue.value)
+                                "calcToMemory" -> calcToMemory(displayValue.value, button.parameter)
+                                "addSquareRoot" -> addSquareRoot()
+                                "addSymbol" -> addSymbol(button.parameter, displayValue.value)
+                                "toggleSign" -> toggleSign()
+                                "clearInfos" -> clearInfos()
+                                "addNumber" -> addNumber(button.name)
+                                "addDot" -> addDot()
+                                "calcResult" -> calcResult()
+                                else -> displayValue.value
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -128,11 +143,17 @@ fun createButton(text: String, color: Color, onClick: () -> Unit) {
 }
 
 fun clearInfos(): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     calcArray = emptyArray()
     return ""
 }
 
 fun addNumber(number: String): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     // Se não tiver nenhum item no array ou tiver dado erro adicionar o nº como 1º
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf(number)
@@ -148,6 +169,9 @@ fun addNumber(number: String): String {
         return number
     }
 
+    // Validar se a string é apenas um 0, se for remover o 0
+    if (lastString == "0") lastString = ""
+
     // Adicionar o novo nº a ultima string
     lastString += number
     calcArray[calcArray.size - 1] = lastString
@@ -155,6 +179,9 @@ fun addNumber(number: String): String {
 }
 
 fun addSymbol(symbol: String, lastValue: String): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     // Se o array tiver vazio ou tiver dado um erro adicionar um 0 e operador
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf("0", symbol)
@@ -183,6 +210,9 @@ fun addSymbol(symbol: String, lastValue: String): String {
 }
 
 fun addDot(): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     // Se não tiver nenhum item no array ou tiver dado erro adicionar 0.
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf("0.")
@@ -208,6 +238,9 @@ fun addDot(): String {
 }
 
 fun addSquareRoot(): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     // Se não tiver nenhum item no array ou tiver dado erro adicionar o simbolo de raiz
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
         calcArray = arrayOf("√")
@@ -228,6 +261,9 @@ fun addSquareRoot(): String {
 }
 
 fun toggleSign(): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     var numValue: String
 
     // Se não tiver nenhum item no array ou tiver dado erro adicionar o simbolo de negativo
@@ -252,6 +288,9 @@ fun toggleSign(): String {
 }
 
 fun calcResult(): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
     var firstNumber: Double
     var operationValue: String
 
@@ -282,7 +321,7 @@ fun calcResult(): String {
     return operationValue
 }
 
-fun operatorResolve(firstNumber: Double, operator: String, secondNumber: Double = 0.0): String {
+fun operatorResolve(firstNumber: Double, operator: String, secondNumber: Double): String {
     if (operator == "/" && secondNumber == 0.0) {
         return "ERR"
     }
@@ -292,6 +331,7 @@ fun operatorResolve(firstNumber: Double, operator: String, secondNumber: Double 
         "-" -> firstNumber - secondNumber
         "*" -> firstNumber * secondNumber
         "/" -> firstNumber / secondNumber
+        "%" -> firstNumber % secondNumber
         else -> 0
     }
 
@@ -312,4 +352,39 @@ fun removeZeros(number: Number): String {
     if (resultString.endsWith(".0")) return resultString.split(".").first()
 
     return resultString
+}
+
+fun calcToMemory(displayValue: String, symbol: String): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
+    // Se no display tiver o erro parar o processamento
+    if (displayValue == "ERR") return displayValue
+
+    // adicionar o valor a memoria
+    var numMemoryValue = resolveSquareRoot(displayValue)
+    memoryValue = operatorResolve(memoryValue.toDouble(), symbol, numMemoryValue)
+
+    return displayValue
+}
+
+fun getMemory(displayValue: String): String {
+    // Se for a 1º vez a clicar no botão devolver o valor
+    if (!resetMemory) {
+        resetMemory = true
+
+        // Alterar o valor no array de calculo também
+        when (calcArray.size) {
+            1 -> calcArray[0] = memoryValue
+            2 -> calcArray += memoryValue
+            else -> calcArray[2] = memoryValue
+        }
+
+        return  memoryValue
+    }
+
+    // Se for a 2º vez seguida apagar o valor
+    resetMemory = false
+    memoryValue = "0"
+    return displayValue
 }
