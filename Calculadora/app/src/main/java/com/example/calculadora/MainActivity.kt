@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calculadora.ui.CreateButton
 import com.example.calculadora.ui.theme.CalculadoraTheme
 import kotlin.math.sqrt
 
@@ -42,6 +41,7 @@ data class Button(
 // Variaveis globais
 var calcArray: Array<String> = emptyArray()
 var memoryValue = "0"
+var equalsCalc = false
 var resetMemory = false
 
 // Constantes
@@ -49,8 +49,8 @@ val ButtonLayout: Array<Array<Button>> = arrayOf(
     arrayOf(Button("MRC", Color.Black, "getMemory"),
         Button("M-", Color.Black, "calcToMemory", "-"),
         Button("M-", Color.Black, "calcToMemory", "+"),
-        Button("ON/C", Color.Red)),
-    arrayOf(Button("√", Color.Black, "addSquareRoot"),
+        Button("ON/C", Color.Red, "clear")),
+    arrayOf(Button("√", Color.Black, "squareRoot"),
         Button("%", Color.Black, "addSymbol", "%"),
         Button("+/-", Color.Black, "toggleSign"),
         Button("CE", Color.Red, "clearInfos")),
@@ -104,24 +104,27 @@ fun MainScreen(modifier: Modifier = Modifier) {
             Text( text = displayValue.value,
                   Modifier.background(Color.White)
                           .fillMaxWidth()
-                          .padding(vertical = 13.dp),
+                          .height(80.dp)
+                          .wrapContentHeight(Alignment.Bottom),
                   textAlign = TextAlign.End,
-                  fontSize = 20.sp)
+                  fontSize = 30.sp)
 
             for (buttons in ButtonLayout) {
-                Row (horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row ( Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween) {
                     for (button in buttons) {
-                        createButton(button.name, button.color) {
+                        CreateButton(button.name, button.color) {
                             displayValue.value = when (button.funcName) {
                                 "getMemory" -> getMemory(displayValue.value)
                                 "calcToMemory" -> calcToMemory(displayValue.value, button.parameter)
-                                "addSquareRoot" -> addSquareRoot()
+                                "squareRoot" -> squareRoot()
                                 "addSymbol" -> addSymbol(button.parameter, displayValue.value)
                                 "toggleSign" -> toggleSign()
                                 "clearInfos" -> clearInfos()
                                 "addNumber" -> addNumber(button.name)
                                 "addDot" -> addDot()
                                 "calcResult" -> calcResult()
+                                "clear" -> clear()
                                 else -> displayValue.value
                             }
                         }
@@ -129,16 +132,6 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun createButton(text: String, color: Color, onClick: () -> Unit) {
-    Button(modifier = Modifier.size(width = 80.dp, height = 50.dp),
-           onClick = onClick,
-           colors = ButtonDefaults.buttonColors(color),
-           shape = RoundedCornerShape(35)) {
-            Text(text = text, fontSize = 13.sp)
     }
 }
 
@@ -153,6 +146,12 @@ fun clearInfos(): String {
 fun addNumber(number: String): String {
     // Colocar o reset da memoria a falso
     resetMemory = false
+
+    // Se clicar num nº ao final de clicar no igual recomeça
+    if (equalsCalc && calcArray.size == 1) {
+        calcArray = arrayOf()
+        equalsCalc = false
+    }
 
     // Se não tiver nenhum item no array ou tiver dado erro adicionar o nº como 1º
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
@@ -192,6 +191,8 @@ fun addSymbol(symbol: String, lastValue: String): String {
     if (calcArray.size == 3) {
         var result = calcResult()
         calcArray = arrayOf(result, symbol)
+        //Setar a flag de calculo a false
+        equalsCalc = false
         return result
     }
 
@@ -212,6 +213,12 @@ fun addSymbol(symbol: String, lastValue: String): String {
 fun addDot(): String {
     // Colocar o reset da memoria a falso
     resetMemory = false
+
+    // Se clicar no "." ao final de clicar no igual recomeça
+    if (equalsCalc && calcArray.size == 1) {
+        calcArray = arrayOf()
+        equalsCalc = false
+    }
 
     // Se não tiver nenhum item no array ou tiver dado erro adicionar 0.
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
@@ -237,27 +244,31 @@ fun addDot(): String {
     return lastString
 }
 
-fun addSquareRoot(): String {
+fun squareRoot(): String {
     // Colocar o reset da memoria a falso
     resetMemory = false
 
-    // Se não tiver nenhum item no array ou tiver dado erro adicionar o simbolo de raiz
+    var numValue: Double
+
+    // Se não tiver nenhum item no array ou tiver dado erro adicionar o simbolo de negativo
     if (calcArray.isEmpty() || calcArray.first() == "ERR") {
-        calcArray = arrayOf("√")
-        return "√"
+        calcArray = arrayOf("ERR")
+        return "ERR"
     }
 
-    // Obter o ultimo valor do array
-    var lastString = calcArray.last()
-
-    // Se o valor já for um simbolo alterar o memso
-    if (operationSymbols.contains(lastString)) {
-        calcArray += "√"
-        return "√"
+    // fazer a raiz do ultimo elemento
+    if (calcArray.size == 3) {
+        numValue = calcArray.last().toDouble()
+        numValue = sqrt(numValue)
+        calcArray[calcArray.size - 1] = removeZeros(numValue)
+        return calcArray.last()
     }
 
-    // Se não for no inicio do calculo não se pode adicionar a raiz
-    return lastString
+    // Se não fazer a raiz do 1º elemento
+    numValue = calcArray.first().toDouble()
+    numValue = sqrt(numValue)
+    calcArray[0] = removeZeros(numValue)
+    return calcArray.first()
 }
 
 fun toggleSign(): String {
@@ -291,6 +302,9 @@ fun calcResult(): String {
     // Colocar o reset da memoria a falso
     resetMemory = false
 
+    //Setar a flag de calculo a true
+    equalsCalc = true
+
     var firstNumber: Double
     var operationValue: String
 
@@ -299,13 +313,12 @@ fun calcResult(): String {
 
     // Se o tamanho for 1 devolver o valor do array
     if (calcArray.size == 1) {
-        firstNumber = resolveSquareRoot(calcArray.first())
-        return removeZeros(firstNumber)
+        return calcArray.first()
     }
 
     // Se tiver dois elementos fazer a operação com o 1º e o operador
     if (calcArray.size == 2) {
-        firstNumber = resolveSquareRoot(calcArray.first())
+        firstNumber = calcArray.first().toDouble()
         operationValue = operatorResolve(firstNumber, calcArray[1], firstNumber)
         // Colocar o resultado no array
         calcArray = arrayOf(operationValue)
@@ -313,8 +326,8 @@ fun calcResult(): String {
     }
 
     // Fazer o calculo de quanto tem as 3 possições
-    firstNumber = resolveSquareRoot(calcArray.first())
-    var secondNumber = resolveSquareRoot(calcArray.last())
+    firstNumber = calcArray.first().toDouble()
+    var secondNumber = calcArray.last().toDouble()
     operationValue = operatorResolve(firstNumber, calcArray[1], secondNumber)
     // Colocar o resultado no array
     calcArray = arrayOf(operationValue)
@@ -338,14 +351,6 @@ fun operatorResolve(firstNumber: Double, operator: String, secondNumber: Double)
     return removeZeros(result)
 }
 
-fun resolveSquareRoot(number: String): Double {
-    if (!number.startsWith("√")) return number.toDouble()
-
-    // Remover o simbolo da raiz e devolver o calculo
-    var numberDouble = number.replace("√", "").toDouble()
-    return sqrt(numberDouble)
-}
-
 fun removeZeros(number: Number): String {
     var resultString = number.toString()
     // Se acabar por .0 devolver sem o .0
@@ -362,7 +367,7 @@ fun calcToMemory(displayValue: String, symbol: String): String {
     if (displayValue == "ERR") return displayValue
 
     // adicionar o valor a memoria
-    var numMemoryValue = resolveSquareRoot(displayValue)
+    var numMemoryValue = displayValue.toDouble()
     memoryValue = operatorResolve(memoryValue.toDouble(), symbol, numMemoryValue)
 
     return displayValue
@@ -387,4 +392,19 @@ fun getMemory(displayValue: String): String {
     resetMemory = false
     memoryValue = "0"
     return displayValue
+}
+
+fun clear(): String {
+    // Colocar o reset da memoria a falso
+    resetMemory = false
+
+    if (calcArray.isEmpty()) return ""
+
+    if (calcArray.size == 3) {
+        calcArray[calcArray.size - 1] = "0"
+        return "0"
+    }
+
+    calcArray = arrayOf("0")
+    return "0"
 }
