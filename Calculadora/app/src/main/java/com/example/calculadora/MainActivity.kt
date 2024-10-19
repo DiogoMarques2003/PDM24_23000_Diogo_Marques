@@ -138,6 +138,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
 fun clearInfos(): String {
     // Colocar o reset da memoria a falso
     resetMemory = false
+    equalsCalc = false
 
     calcArray = emptyArray()
     return ""
@@ -405,6 +406,7 @@ fun clear(): String {
         return "0"
     }
 
+    equalsCalc = false
     calcArray = arrayOf("0")
     return "0"
 }
