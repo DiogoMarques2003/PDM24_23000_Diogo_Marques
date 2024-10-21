@@ -48,7 +48,7 @@ var resetMemory = false
 val ButtonLayout: Array<Array<Button>> = arrayOf(
     arrayOf(Button("MRC", Color.Black, "getMemory"),
         Button("M-", Color.Black, "calcToMemory", "-"),
-        Button("M-", Color.Black, "calcToMemory", "+"),
+        Button("M+", Color.Black, "calcToMemory", "+"),
         Button("ON/C", Color.Red, "clear")),
     arrayOf(Button("√", Color.Black, "squareRoot"),
         Button("%", Color.Black, "addSymbol", "%"),
