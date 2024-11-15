@@ -1,4 +1,4 @@
-package com.example.ny_news.data.reository
+package com.example.ny_news.data.repository
 
 import com.example.ny_news.data.remote.api.NyTimesApi
 import com.example.ny_news.domain.model.News
