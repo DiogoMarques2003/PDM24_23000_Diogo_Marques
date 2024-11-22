@@ -13,6 +13,6 @@ data class NewsResultDto(val subsection: String,
                     title = title,
                     abstract = abstract,
                     url = url,
-                    multimedia = if (multimedia.isEmpty()) multimedia.map { it.toMultimedia() } else emptyList() )
+                    multimedia = if (multimedia.isNotEmpty()) multimedia.map { it.toMultimedia() } else emptyList() )
     }
 }

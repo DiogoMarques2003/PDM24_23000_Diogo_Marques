@@ -6,13 +6,13 @@ data class MultimediaDto(val url: String,
                          val height: Int,
                          val width: Int,
                          val type: String,
-                         val cation: String
+                         val caption: String
 ) {
     fun toMultimedia(): Multimedia {
         return Multimedia(url = url,
                           height = height,
                           width = width,
                           type = type,
-                          cation = cation)
+                          caption = caption)
     }
 }

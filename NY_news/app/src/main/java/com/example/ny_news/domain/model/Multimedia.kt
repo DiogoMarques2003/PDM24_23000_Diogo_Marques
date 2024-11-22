@@ -4,4 +4,4 @@ data class Multimedia(val url: String,
                       val height: Int,
                       val width: Int,
                       val type: String,
-                      val cation: String)
+                      val caption: String)
