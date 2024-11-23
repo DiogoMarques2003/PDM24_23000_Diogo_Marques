@@ -4,4 +4,6 @@ data class NewsResult(val subsection: String,
                 val title: String,
                 val abstract: String,
                 val url: String,
+                val byline: String,
+                val published_date: String,
                 val multimedia: List<Multimedia>)

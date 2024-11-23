@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.ny_news.commun.dateTimeFormater
 import com.example.ny_news.presentation.news_list.NewsListViewModel
 import com.example.ny_news.ui.ImageDisplay
 
@@ -58,7 +59,19 @@ fun NewsScreen(modifier: Modifier = Modifier, newsListViewModel: NewsListViewMod
                     Text(
                         text = news.abstract,
                         style = MaterialTheme.typography.bodyMedium,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    Text(
+                        text = "Autor: ${news.byline}",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+
+                    Text(
+                        text = "Publicado em: ${dateTimeFormater(news.published_date)}",
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }
