@@ -13,7 +13,7 @@ object RetrofitInstance {
     // Criar um interceptor para adicionar a API key nos requests
     private val authInterceptor = Interceptor{ chain ->
         val originalRequest: Request = chain.request()
-        val url = originalRequest.url().newBuilder()
+        val url = originalRequest.url.newBuilder()
             .addQueryParameter("api-key", BuildConfig.NYT_API_KEY)
             .build()
 
