@@ -1,4 +1,4 @@
-package com.example.ny_news.commun
+package com.example.ny_news.common
 
 fun dateTimeFormater(dateTime: String): String {
     val dateTimeParts = dateTime.split("T")
