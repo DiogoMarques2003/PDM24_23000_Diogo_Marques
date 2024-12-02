@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "852134833151",
+    "project_id": "pdm2024-lastproj",
+    "storage_bucket": "pdm2024-lastproj.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:852134833151:android:c2b55500d3716dadb7d5ca",
+        "android_client_info": {
+          "package_name": "com.example.firebasestore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC8441VPiISj-KU8wgLiemkM--6r5mQW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
