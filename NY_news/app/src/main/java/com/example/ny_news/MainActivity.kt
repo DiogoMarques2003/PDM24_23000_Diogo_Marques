@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.example.ny_news.presentation.news_list.NewsListViewModel
-import com.example.ny_news.ui.screens.NewsScreen
+import com.example.ny_news.ui.navigation.Navegation
 import com.example.ny_news.ui.theme.NY_newsTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,12 +18,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NY_newsTheme {
-                val newsListViewModel = NewsListViewModel()
                 Scaffold (modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NewsScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        newsListViewModel
-                    )
+                    Navegation(Modifier.padding(innerPadding))
                 }
             }
         }

@@ -1,7 +1,5 @@
 package com.example.ny_news.ui
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,23 +8,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.ny_news.common.dateTimeFormater
 import com.example.ny_news.domain.model.NewsResult
 
 @Composable
-fun New(news: NewsResult) {
-    val context = LocalContext.current
-
+fun New(news: NewsResult, navController : NavController) {
     ElevatedCard (
         onClick = {
-            // Abrir o browser com o link da noticia
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                data = Uri.parse(news.url)
-            }
-            context.startActivity(intent)
+            navController.navigate("new/${news.id}")
         },
         modifier = Modifier.fillMaxWidth()
             .padding(vertical = 8.dp)
