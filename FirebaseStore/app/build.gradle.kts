@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.firebasestore"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.firebasestore"
@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,12 +69,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
     // Auth
-    implementation("com.google.firebase:firebase-auth")
+    implementation(libs.firebase.auth)
     // Firestore
-    implementation("com.google.firebase:firebase-firestore")
+    implementation(libs.firebase.firestore)
     // Storage
-    implementation("com.google.firebase:firebase-storage")
+    implementation(libs.firebase.storage)
+    // Lib para mostrar as imagens
+    implementation(libs.coil)
+    implementation(libs.coilNetwork)
+
+    implementation(libs.materialIcons)
+    implementation(libs.material)
 }
