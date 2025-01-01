@@ -11,6 +11,10 @@ class ProductImageRepository(private val productImageDao: ProductImageDao) {
         productImageDao.insertList(productImages)
     }
 
+    fun getByProductId(productId: String): Flow<List<ProductImage>> {
+        return  productImageDao.getByProductId(productId)
+    }
+
     suspend fun deleteAll() {
         productImageDao.deleteAll()
     }

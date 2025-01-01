@@ -77,7 +77,9 @@ class RegisterViewModel(database: AppDatabase, private val navController: NavCon
                 userRepository.insert(user)
 
                 // Redirecionar para a proxima página
-                navController.navigate(NavigationPaths.ProductList)
+                navController.navigate(NavigationPaths.ProductList) {
+                    popUpTo(0) { inclusive = true }
+                }
             } finally {
                 isProcessing.value = false
             }

@@ -24,7 +24,7 @@ data class Product(
 
     companion object {
         fun firebaseMapToClass(data: Map<String, Any?>): Product {
-            val categoryReference = data["categoryId"] as DocumentReference
+            val categoryReference = data["categoryID"] as DocumentReference
 
             return Product(
                 id = data["id"] as String,

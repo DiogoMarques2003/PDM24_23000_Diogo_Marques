@@ -71,7 +71,9 @@ class LoginViewModel(database: AppDatabase, private val navController: NavContro
                 userRepository.insert(userClass)
 
                 // Enviar para a tela de homepage
-                navController.navigate(NavigationPaths.ProductList)
+                navController.navigate(NavigationPaths.ProductList) {
+                    popUpTo(0) { inclusive = true }
+                }
             } finally {
                 isProcessing.value = false
             }

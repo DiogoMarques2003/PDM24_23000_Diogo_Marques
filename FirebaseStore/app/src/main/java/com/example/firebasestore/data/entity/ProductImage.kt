@@ -8,7 +8,7 @@ import com.google.firebase.firestore.DocumentReference
 data class ProductImage(
     @PrimaryKey(autoGenerate = false) val id: String,
     val productId: String,
-    val image: String
+    var image: String?
 ) {
     fun toFirebaseMap(): Map<String, Any?> {
         return mapOf(
@@ -25,7 +25,7 @@ data class ProductImage(
             return ProductImage(
                 id = data["id"] as String,
                 productId = productReference.id,
-                image = data["image"] as String
+                image = data["image"] as? String
             )
         }
     }

@@ -14,6 +14,9 @@ interface ProductImageDao {
     @Query("SELECT * FROM productImage")
     fun getAll(): Flow<List<ProductImage>>
 
+    @Query("SELECT * FROM productImage WHERE productId = :productId")
+    fun getByProductId(productId: String): Flow<List<ProductImage>>
+
     @Query("DELETE FROM productImage")
     suspend fun deleteAll()
 }

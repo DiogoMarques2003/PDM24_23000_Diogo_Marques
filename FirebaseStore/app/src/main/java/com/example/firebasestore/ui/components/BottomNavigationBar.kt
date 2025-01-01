@@ -15,9 +15,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.firebasestore.ui.navigation.NavigationPaths
+import com.example.firebasestore.ui.viewModels.NavigationBarViewModel
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(
+    navController: NavController,
+    viewModel: NavigationBarViewModel
+) {
     var selectedItem by remember { mutableIntStateOf(0) }
 
     NavigationBar {
@@ -45,7 +49,10 @@ fun BottomNavigationBar(navController: NavController) {
             selected = selectedItem == 2,
             onClick = {
                 selectedItem = 2
-                navController.navigate(NavigationPaths.ProductList)
+                viewModel.logoutAndClearCache()
+                navController.navigate(NavigationPaths.Login) {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         )
     }

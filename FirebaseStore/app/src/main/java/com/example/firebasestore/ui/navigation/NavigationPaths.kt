@@ -4,4 +4,5 @@ object NavigationPaths {
     val Login = "login"
     val Register = "register"
     val ProductList = "productList"
+    val Product = "product"
 }
