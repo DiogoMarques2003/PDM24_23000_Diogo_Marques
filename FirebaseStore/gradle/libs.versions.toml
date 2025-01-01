@@ -11,6 +11,9 @@ activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 coil = "3.0.3"
 coilNetwork = "3.0.3"
+roomCommon = "2.6.1"
+roomCompiler = "2.6.1"
+roomKtx = "2.6.1"
 navigationCompose = "2.8.5"
 materialIcons = "1.7.6"
 material = "1.7.6"
@@ -40,6 +43,9 @@ coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 materialIcons = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 material = { module = "androidx.compose.material:material", version.ref = "material" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

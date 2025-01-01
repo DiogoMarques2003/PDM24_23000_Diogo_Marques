@@ -4,10 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
+import com.example.firebasestore.data.firebase.FirebaseAutentication
+import com.example.firebasestore.data.firebase.FirebaseFirestore
+import com.example.firebasestore.data.firebase.FirebaseStorage
 import com.example.firebasestore.ui.navigation.Navigation
 import com.example.firebasestore.ui.theme.FirebaseStoreTheme
 
@@ -15,11 +14,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        //Start firebase
+        FirebaseFirestore.start()
+        FirebaseStorage.start()
+        FirebaseAutentication.start()
+
         setContent {
             FirebaseStoreTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Navigation(modifier = Modifier.padding(innerPadding))
-                }
+                Navigation()
             }
         }
     }
