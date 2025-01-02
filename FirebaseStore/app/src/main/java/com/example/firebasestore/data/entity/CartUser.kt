@@ -2,6 +2,8 @@ package com.example.firebasestore.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.firebasestore.data.firebase.FirebaseCollections
+import com.example.firebasestore.data.firebase.FirebaseFirestore
 import com.google.firebase.firestore.DocumentReference
 
 @Entity(tableName = "cartUser")
@@ -12,9 +14,8 @@ data class CartUser(
 ) {
     fun toFirebaseMap(): Map<String, Any?> {
         return mapOf(
-            "id" to id,
-            "cartId" to cartId,
-            "userId" to userId
+            "cartId" to FirebaseFirestore.getReferenceById(FirebaseCollections.Cart, cartId),
+            "userId" to FirebaseFirestore.getReferenceById(FirebaseCollections.User, userId)
         )
     }
 

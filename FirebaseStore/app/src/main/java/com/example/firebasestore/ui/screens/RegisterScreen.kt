@@ -100,7 +100,7 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(
-            onClick = { navController.navigate(NavigationPaths.Login) },
+            onClick = { navController.navigate(NavigationPaths.LOGIN) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Já tem uma conta? Fazer Login")

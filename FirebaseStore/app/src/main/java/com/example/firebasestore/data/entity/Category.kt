@@ -8,13 +8,6 @@ data class Category(
     @PrimaryKey(autoGenerate = false) val id: String,
     val nome: String
 ) {
-    fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(
-            "id" to id,
-            "nome" to nome
-        )
-    }
-
     companion object {
         fun firebaseMapToClass(data: Map<String, Any?>): Category {
             return Category(

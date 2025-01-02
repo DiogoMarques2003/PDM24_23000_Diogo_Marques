@@ -88,7 +88,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         TextButton(
-            onClick = { navController.navigate(NavigationPaths.Register) },
+            onClick = { navController.navigate(NavigationPaths.REGISTER) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Criar conta")

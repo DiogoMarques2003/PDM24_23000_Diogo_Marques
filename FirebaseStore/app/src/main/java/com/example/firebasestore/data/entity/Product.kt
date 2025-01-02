@@ -12,16 +12,6 @@ data class Product(
     val description: String,
     val price: Long
 ) {
-    fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(
-            "id" to id,
-            "categoryID" to categoryID, // TODO: Change for reference
-            "name" to name,
-            "description" to description,
-            "price" to price
-        )
-    }
-
     companion object {
         fun firebaseMapToClass(data: Map<String, Any?>): Product {
             val categoryReference = data["categoryID"] as DocumentReference

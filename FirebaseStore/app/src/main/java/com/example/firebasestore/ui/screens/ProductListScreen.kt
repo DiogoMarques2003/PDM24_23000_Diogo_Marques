@@ -125,7 +125,7 @@ fun ProductListScreen(
                         modifier = Modifier
                             .size(height = 200.dp, width = 200.dp)
                             .padding(8.dp),
-                        onClick = { navController.navigate("${NavigationPaths.Product}/${product.id}") }
+                        onClick = { navController.navigate("${NavigationPaths.PRODUCT}/${product.id}") }
                     ) {
                         Row(modifier = Modifier.weight(1f)) {
                             SubcomposeAsyncImage(

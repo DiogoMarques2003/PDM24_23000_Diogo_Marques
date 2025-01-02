@@ -20,10 +20,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.firebasestore.data.database.AppDatabase
 import com.example.firebasestore.data.firebase.FirebaseAutentication
 import com.example.firebasestore.ui.components.BottomNavigationBar
+import com.example.firebasestore.ui.screens.CartScreen
 import com.example.firebasestore.ui.screens.LoginScreen
 import com.example.firebasestore.ui.screens.ProductListScreen
 import com.example.firebasestore.ui.screens.ProductScreen
 import com.example.firebasestore.ui.screens.RegisterScreen
+import com.example.firebasestore.ui.viewModels.CartViewModel
 import com.example.firebasestore.ui.viewModels.LoginViewModel
 import com.example.firebasestore.ui.viewModels.NavigationBarViewModel
 import com.example.firebasestore.ui.viewModels.ProductListViewModel
@@ -35,12 +37,12 @@ fun Navigation() {
     val context = LocalContext.current
     val navController = rememberNavController()
     val database = AppDatabase.getDatabase(LocalContext.current)
-    val screensShowBottomBar = listOf(NavigationPaths.ProductList)
+    val screensShowBottomBar = listOf(NavigationPaths.PRODUCT_LIST, NavigationPaths.CART)
     val navigationBarViewModel = NavigationBarViewModel(database)
 
-    var displayScreen by remember { mutableStateOf(NavigationPaths.Login) }
+    var displayScreen by remember { mutableStateOf(NavigationPaths.LOGIN) }
     if (FirebaseAutentication.getCurrentUser()?.uid != null) {
-        displayScreen = NavigationPaths.ProductList
+        displayScreen = NavigationPaths.PRODUCT_LIST
     }
 
     Scaffold(
@@ -59,22 +61,22 @@ fun Navigation() {
             .padding(start = 16.dp, end = 16.dp)
 
         NavHost(navController = navController, startDestination = displayScreen) {
-            composable(NavigationPaths.Login) {
+            composable(NavigationPaths.LOGIN) {
                 val viewModel = LoginViewModel(database, navController)
                 LoginScreen(modifier, navController, viewModel)
             }
 
-            composable(NavigationPaths.Register) {
+            composable(NavigationPaths.REGISTER) {
                 val viewModel = RegisterViewModel(database, navController)
                 RegisterScreen(modifier, navController, viewModel)
             }
 
-            composable(NavigationPaths.ProductList) {
+            composable(NavigationPaths.PRODUCT_LIST) {
                 val viewModel = ProductListViewModel(database)
                 ProductListScreen(modifier, navController, viewModel)
             }
 
-            composable("${NavigationPaths.Product}/{productId}") { backstageEntry ->
+            composable("${NavigationPaths.PRODUCT}/{productId}") { backstageEntry ->
                 val productId = backstageEntry.arguments?.getString("productId")
 
                 if (productId == null) {
@@ -86,6 +88,11 @@ fun Navigation() {
                     val viewModel = ProductViewModel(database, productId)
                     ProductScreen(modifier, navController, viewModel)
                 }
+            }
+
+            composable(NavigationPaths.CART) {
+                val viewModel = CartViewModel(database)
+                CartScreen(modifier, navController, viewModel)
             }
         }
     }

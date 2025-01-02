@@ -1,8 +1,9 @@
 package com.example.firebasestore.ui.navigation
 
 object NavigationPaths {
-    val Login = "login"
-    val Register = "register"
-    val ProductList = "productList"
-    val Product = "product"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
+    const val PRODUCT_LIST = "productList"
+    const val PRODUCT = "product"
+    const val CART = "cart"
 }

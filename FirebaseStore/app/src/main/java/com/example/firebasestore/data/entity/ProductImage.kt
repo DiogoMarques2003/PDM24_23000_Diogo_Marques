@@ -10,14 +10,6 @@ data class ProductImage(
     val productId: String,
     var image: String?
 ) {
-    fun toFirebaseMap(): Map<String, Any?> {
-        return mapOf(
-            "id" to id,
-            "productId" to productId,
-            "image" to image
-        )
-    }
-
     companion object {
         fun firebaseMapToClass(data: Map<String, Any?>): ProductImage {
             val productReference = data["productId"] as DocumentReference

@@ -14,6 +14,9 @@ interface CartUserDao {
     @Query("SELECT * FROM cartUser")
     fun getAll(): Flow<List<CartUser>>
 
+    @Query("SELECT * FROM cartUser WHERE userId = :userId")
+    fun getByUserId(userId: String): Flow<List<CartUser>>
+
     @Query("DELETE FROM cartUser")
     suspend fun deleteAll()
 }

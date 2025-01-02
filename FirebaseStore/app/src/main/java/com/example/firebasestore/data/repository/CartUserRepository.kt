@@ -11,6 +11,10 @@ class CartUserRepository(private val cartUserDao: CartUserDao) {
         cartUserDao.insertList(cartUsers)
     }
 
+    fun getByUserId(userId: String): Flow<List<CartUser>> {
+        return cartUserDao.getByUserId(userId)
+    }
+
     suspend fun deleteAll() {
         cartUserDao.deleteAll()
     }

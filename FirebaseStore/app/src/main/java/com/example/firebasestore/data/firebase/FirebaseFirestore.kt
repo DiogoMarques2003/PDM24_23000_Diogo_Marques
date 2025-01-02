@@ -1,6 +1,7 @@
 package com.example.firebasestore.data.firebase
 
 import com.google.firebase.Firebase
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.firestore
@@ -13,8 +14,12 @@ object FirebaseFirestore {
         firestore = Firebase.firestore
     }
 
+    fun getReferenceById(collection: String, id: String): DocumentReference {
+        return firestore.collection(collection).document(id)
+    }
+
     // Método para inserir dados
-    suspend fun insertData(
+    suspend fun changeData(
         collection: String,
         data: Map<String, Any?>,
         documentId: String? = null
@@ -100,20 +105,6 @@ object FirebaseFirestore {
                         onDataChanged(null) // Nenhum dado encontrado
                     }
                 }
-        }
-    }
-
-    // Método para atualizar dados
-    suspend fun updateData(
-        collection: String,
-        documentId: String,
-        updatedData: Map<String, Any?>
-    ): Boolean {
-        return try {
-            firestore.collection(collection).document(documentId).update(updatedData).await()
-            true
-        } catch (e: Exception) {
-            false
         }
     }
 

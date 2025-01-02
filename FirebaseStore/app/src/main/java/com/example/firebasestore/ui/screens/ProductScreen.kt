@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.firebasestore.ui.components.AddProductPopup
 import com.example.firebasestore.ui.components.ImageDisplay
 import com.example.firebasestore.ui.components.LoadIndicator
 import com.example.firebasestore.ui.components.PopBackButton
@@ -36,6 +37,8 @@ fun ProductScreen(
 
     val product by viewModel.product.collectAsState(null)
     val productImages by viewModel.productImages.collectAsState(emptyList())
+    val showPopup by viewModel.showPopup.collectAsState(false)
+    val isLoading by viewModel.isLoading.collectAsState(false)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -47,6 +50,15 @@ fun ProductScreen(
         //Get fresh data
         viewModel.getData(context)
     }
+
+    if (isLoading) {
+        LoadIndicator(modifier)
+    }
+
+    if (showPopup) {
+        AddProductPopup(viewModel)
+    }
+
     Box(modifier.fillMaxSize()) {
         Column(
             Modifier
@@ -67,7 +79,7 @@ fun ProductScreen(
 
             Spacer(Modifier.size(8.dp))
 
-            if (product == null) {
+            if (product == null || productImages.isEmpty()) {
                 LoadIndicator()
             } else {
                 ImageDisplay(productImages)
@@ -95,7 +107,7 @@ fun ProductScreen(
         }
 
         Button(
-            onClick = { },
+            onClick = { viewModel.checkIfUserHaveCarts(context) },
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomEnd)

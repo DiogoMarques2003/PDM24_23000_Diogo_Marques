@@ -31,7 +31,7 @@ fun BottomNavigationBar(
             selected = selectedItem == 0,
             onClick = {
                 selectedItem = 0
-                navController.navigate(NavigationPaths.ProductList)
+                navController.navigate(NavigationPaths.PRODUCT_LIST)
             }
         )
         NavigationBarItem(
@@ -40,7 +40,7 @@ fun BottomNavigationBar(
             selected = selectedItem == 1,
             onClick = {
                 selectedItem = 1
-                navController.navigate(NavigationPaths.ProductList)
+                navController.navigate(NavigationPaths.CART)
             }
         )
         NavigationBarItem(
@@ -50,7 +50,7 @@ fun BottomNavigationBar(
             onClick = {
                 selectedItem = 2
                 viewModel.logoutAndClearCache()
-                navController.navigate(NavigationPaths.Login) {
+                navController.navigate(NavigationPaths.LOGIN) {
                     popUpTo(0) { inclusive = true }
                 }
             }

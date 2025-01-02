@@ -66,7 +66,7 @@ class RegisterViewModel(database: AppDatabase, private val navController: NavCon
                 )
 
                 // Criar utilizador na base de dados
-                FirebaseFirestore.insertData(FirebaseCollections.User, user.toFirebaseMap(), userId)
+                FirebaseFirestore.changeData(FirebaseCollections.User, user.toFirebaseMap(), userId)
                     ?: return@launch Toast.makeText(
                         context,
                         "Erro ao criar a conta",
@@ -77,7 +77,7 @@ class RegisterViewModel(database: AppDatabase, private val navController: NavCon
                 userRepository.insert(user)
 
                 // Redirecionar para a proxima página
-                navController.navigate(NavigationPaths.ProductList) {
+                navController.navigate(NavigationPaths.PRODUCT_LIST) {
                     popUpTo(0) { inclusive = true }
                 }
             } finally {
