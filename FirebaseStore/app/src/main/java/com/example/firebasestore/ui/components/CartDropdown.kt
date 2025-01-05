@@ -10,6 +10,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,11 +28,16 @@ fun CartDropdown(
     cartsUser: List<CartUser>,
     allCarts: List<Cart>,
     allUsers: List<User>,
-    onCartSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
+    cartSelected: MutableState<String>
 ) {
     var expanded by remember { mutableStateOf(false) }
     var selectedCartText by remember { mutableStateOf("") }
+
+    LaunchedEffect(cartSelected.value) {
+        if (cartSelected.value.isEmpty()) {
+            selectedCartText = ""
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -42,7 +49,7 @@ fun CartDropdown(
             readOnly = true,
             label = { Text("Selecione o Carrinho") },
             trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
-            modifier = modifier
+            modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
         )
@@ -63,7 +70,7 @@ fun CartDropdown(
                 DropdownMenuItem(
                     text = { Text(displayCartText) },
                     onClick = {
-                        onCartSelected(cart.id)
+                        cartSelected.value = cart.cartId
                         selectedCartText = displayCartText
                         expanded = false
                     }

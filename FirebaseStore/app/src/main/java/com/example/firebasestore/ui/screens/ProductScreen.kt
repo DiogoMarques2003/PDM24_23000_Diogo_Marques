@@ -47,7 +47,6 @@ fun ProductScreen(
     }
 
     LaunchedEffect(Unit) {
-        //Get fresh data
         viewModel.getData(context)
     }
 

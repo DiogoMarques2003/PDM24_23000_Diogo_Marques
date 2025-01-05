@@ -49,10 +49,10 @@ fun BottomNavigationBar(
             selected = selectedItem == 2,
             onClick = {
                 selectedItem = 2
-                viewModel.logoutAndClearCache()
                 navController.navigate(NavigationPaths.LOGIN) {
                     popUpTo(0) { inclusive = true }
                 }
+                viewModel.logoutAndClearCache()
             }
         )
     }

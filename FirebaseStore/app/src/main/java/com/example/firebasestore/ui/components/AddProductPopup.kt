@@ -37,7 +37,7 @@ fun AddProductPopup(viewModel: ProductViewModel) {
     val allUsers by viewModel.allUsers.collectAsState(emptyList())
     val context = LocalContext.current
 
-    var selectedCart by remember { mutableStateOf("") }
+    var selectedCart = remember { mutableStateOf("") }
     var quantity by remember { mutableLongStateOf(0) }
 
     Dialog(onDismissRequest = { showPopup.value = false }) {
@@ -61,7 +61,7 @@ fun AddProductPopup(viewModel: ProductViewModel) {
                     cartsUser,
                     allCarts,
                     allUsers,
-                    onCartSelected = { selectedCart = it }
+                    selectedCart
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -94,7 +94,7 @@ fun AddProductPopup(viewModel: ProductViewModel) {
                     }
                     Button(
                         onClick = {
-                            viewModel.addItemToCart(selectedCart, quantity, context)
+                            viewModel.addItemToCart(selectedCart.value, quantity, context)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
