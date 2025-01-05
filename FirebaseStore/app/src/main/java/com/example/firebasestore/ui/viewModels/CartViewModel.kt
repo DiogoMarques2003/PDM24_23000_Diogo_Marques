@@ -47,13 +47,14 @@ class CartViewModel(database: AppDatabase) : ViewModel() {
     val products = productRepository.allProducts
     val productImages = productImageRepository.allProductsImages
     val users = userRepository.allUsers
-    val cartsUser = cartUserRepository.getByUserId(userAuthentication!!.uid)
+    val cartsUser = cartUserRepository.getByUserId(userAuthentication?.uid ?: "")
     val allCartsUsers = cartUserRepository.allCartUsers
     val carts = cartRepository.allCarts
     val cartProducts = cartProductRepository.allCartProducts
 
     var isLoading = MutableStateFlow(false)
     var cartIdManagerUsers = MutableStateFlow<String?>(null)
+    var cartIdToBuy = MutableStateFlow<String?>(null)
 
     fun getData(context: Context) {
         productImageListener = FirebaseFirestore.listenToData(
@@ -190,14 +191,12 @@ class CartViewModel(database: AppDatabase) : ViewModel() {
                 )
             }
 
-            // validar se existe produtos para apagar
-            if (cartProductsDel.isNotEmpty()) {
-                for (cartProduct in cartProductsDel) {
-                    FirebaseFirestore.deleteData(
-                        FirebaseCollections.CartProduct,
-                        cartProduct.id
-                    )
-                }
+            // Apagar produtos do carrinho
+            for (cartProduct in cartProductsDel) {
+                FirebaseFirestore.deleteData(
+                    FirebaseCollections.CartProduct,
+                    cartProduct.id
+                )
             }
 
             // Apagar o carrinho
@@ -251,7 +250,8 @@ class CartViewModel(database: AppDatabase) : ViewModel() {
                 return@launch
             }
 
-            val userInCart = allCartsUsers.first().firstOrNull { it.cartId == cartIdManagerUsers.value && it.userId == user.id }
+            val userInCart = allCartsUsers.first()
+                .firstOrNull { it.cartId == cartIdManagerUsers.value && it.userId == user.id }
 
             if (userInCart != null) {
                 isLoading.value = false
@@ -309,6 +309,83 @@ class CartViewModel(database: AppDatabase) : ViewModel() {
         }
     }
 
+    fun leaveCart(context: Context, cartId: String) {
+        isLoading.value = true
+        viewModelScope.launch {
+            val cartUser = cartsUser.first().first { it.cartId == cartId }
+
+            val success = FirebaseFirestore.deleteData(
+                FirebaseCollections.CartUser,
+                cartUser.id
+            )
+
+            Toast.makeText(
+                context,
+                if (success) "Saiste do carrinho com sucesso" else "Ocorreu algum erro a remover do carrinho",
+                Toast.LENGTH_LONG
+            ).show()
+            isLoading.value = false
+        }
+    }
+
+    fun removeProduct(cartProductId: String) {
+        isLoading.value = true
+        viewModelScope.launch {
+            FirebaseFirestore.deleteData(
+                FirebaseCollections.CartProduct,
+                cartProductId
+            )
+
+            isLoading.value = false
+        }
+    }
+
+    fun buyCart(context: Context, paymentTye: String) {
+        isLoading.value = true
+
+        viewModelScope.launch {
+            // filtrar os produtos do carrinho para os apagar
+            val cartProductsDel = cartProducts.first().filter { it.cartId == cartIdToBuy.value }
+
+            // Filtrar os acessos do carrinho para os apagar
+            val cartUsersDel = allCartsUsers.first().filter { it.cartId == cartIdToBuy.value }
+
+            // Apagar os acessos ao carrinho
+            for (cartUser in cartUsersDel) {
+                FirebaseFirestore.deleteData(
+                    FirebaseCollections.CartUser,
+                    cartUser.id
+                )
+            }
+
+            // validar se existe produtos para apagar
+            if (cartProductsDel.isNotEmpty()) {
+                for (cartProduct in cartProductsDel) {
+                    FirebaseFirestore.deleteData(
+                        FirebaseCollections.CartProduct,
+                        cartProduct.id
+                    )
+                }
+            }
+
+            // Apagar o carrinho
+            FirebaseFirestore.deleteData(
+                FirebaseCollections.Cart,
+                cartIdToBuy.value!!
+            )
+
+            cartIdToBuy.value = null
+
+            Toast.makeText(
+                context,
+                "Carrinho comprado com sucesso com o $paymentTye",
+                Toast.LENGTH_LONG
+            ).show()
+
+            isLoading.value = false
+        }
+    }
+
     private fun updateProductImages(productImagesList: List<Map<String, Any>>?) {
         viewModelScope.launch {
             if (productImagesList == null) {
@@ -336,12 +413,11 @@ class CartViewModel(database: AppDatabase) : ViewModel() {
                 return@launch productRepository.deleteAll()
             }
 
-            val product = productsList.first()
-            val productClass = Product.firebaseMapToClass(product)
+            val productsClass = productsList.map { Product.firebaseMapToClass(it) }
 
             productRepository.deleteAll()
 
-            productRepository.insert(productClass)
+            productRepository.insertList(productsClass)
         }
     }
 

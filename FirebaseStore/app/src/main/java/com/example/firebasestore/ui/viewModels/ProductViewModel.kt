@@ -43,7 +43,7 @@ class ProductViewModel(database: AppDatabase, private val productId: String) : V
     val product = productRepository.getById(productId)
     val productImages = productImageRepository.getByProductId(productId)
     val allUsers = userRepository.allUsers
-    val cartsUser = cartUserRepository.getByUserId(userAuthentication!!.uid)
+    val cartsUser = cartUserRepository.getByUserId(userAuthentication?.uid ?: "")
     val allCarts = cartRepository.allCarts
 
     var showPopup = MutableStateFlow(false)

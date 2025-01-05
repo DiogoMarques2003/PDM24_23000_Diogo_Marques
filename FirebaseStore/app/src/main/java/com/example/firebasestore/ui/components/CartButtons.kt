@@ -69,8 +69,10 @@ fun CartButtons(hasAnyCart: Boolean, isCartOwner: Boolean, cartSelected: String,
     if (!isCartOwner && cartSelected.isNotEmpty()) {
         Spacer(modifier = Modifier.width(8.dp))
         Button(
-            onClick = { },
-            modifier = Modifier.padding(end = 8.dp)
+            onClick = { viewModel.leaveCart(context, cartSelected) },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ExitToApp,
