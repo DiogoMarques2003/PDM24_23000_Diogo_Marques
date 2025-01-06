@@ -109,7 +109,7 @@ fun CartScreen(
         cartSelected.value = if (cartUserExists == null) "" else cartSelected.value
     }
 
-    LaunchedEffect(cartSelected.value, cartProducts) {
+    LaunchedEffect(cartSelected.value, cartProducts, products) {
         if (cartSelected.value.isEmpty()) {
             return@LaunchedEffect
         }
